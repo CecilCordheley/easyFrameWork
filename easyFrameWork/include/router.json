@@ -1,0 +1,9 @@
+{
+    "index.php":{
+        "template":"index.tpl",
+        "ctrl":"index.ctrl.php",
+        "style":[
+            "index.css"
+        ]
+    }
+}
