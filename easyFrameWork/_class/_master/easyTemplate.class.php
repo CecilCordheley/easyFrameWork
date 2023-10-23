@@ -76,20 +76,20 @@ class EasyTemplate
             $i = 0;
             array_walk($matches[1], function ($m) use (&$i, &$array) {
                 $tabName = explode(".", $m);
-                $aName= $tabName[0];
-                $field=$tabName[1];
+                $aName= $tabName[0]??"";
+                $field=$tabName[1]??"";
                 if (count($tabName) > 1) {
                     $array['array'][$i]['key'] = "$aName.$field" ;
                     $v = $this->dictionnary->__get($aName[0]);
 
                     $array['array'][$i]['value'] =
-                        (isset($v[$field])) ? htmlentities($v[$field]) 
+                        (isset($v[$field])) ? htmlspecialchars($v[$field]??'') 
                         : "";
 
                 } else {
                     $array['variable'][$i]['key'] = $m;
                     if (isset($this->dictionnary))
-                        $array['variable'][$i]['value'] = htmlentities($this->dictionnary->__get($m));
+                        $array['variable'][$i]['value'] = htmlspecialchars($this->dictionnary->__get($m)??'');
                 }
                 $i++;
             });
@@ -203,6 +203,18 @@ class EasyTemplate
     {
         $this->replace($item["key"], html_entity_decode($item['value']));
     }
+    /**
+     * @param $key string
+     * @param $sqlView SQLtoView
+     * @param $p array
+     */
+    public function _view($key,$sqlView,$p)
+    {
+        $pattern="{view:$key}";
+        $replace=$sqlView->generate($p);
+        $this->content=str_replace($pattern,$replace,$this->content); 
+        return $this;
+    }
     private function matchReplace($m, $key, $type)
     {
         switch ($type) {
@@ -225,6 +237,9 @@ class EasyTemplate
                 array_walk($array["array"], EasyTemplate::class . '::_replace');
             if (isset($array["loop"]))
                 array_walk($array["loop"], EasyTemplate::class . '::_replace');
+                if (isset($array["view"])){
+                    array_walk($array["view"], EasyTemplate::class . '::_view');
+                }
             $this->replaceGetVariable();
             $this->replaceUNICODE();
             if (isset($_SESSION))

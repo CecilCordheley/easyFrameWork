@@ -1,27 +1,72 @@
 <?php
-    class Router{
-        private static $pageName;
-        private static $ROUTER_INFO;
-        public static function INIT(){
-            $page=explode("/",$_SERVER['PHP_SELF']);
-            self::$pageName = $page[count($page)-1];
-            self::$ROUTER_INFO=json_decode(file_get_contents("include/router.json"),true);
-        }
-        public static function getCtrl(){
-        
-            return "_ctrl/".self::$ROUTER_INFO[self::$pageName]["ctrl"];
-        }
-        public static function getTemplate(){
-           return self::$ROUTER_INFO[self::$pageName]["template"];
-        }
-        /**
-         * @param EasyTemplate $tpl
-         */
-        public static function LoadStyles(&$tpl){
-            $a=self::$ROUTER_INFO[self::$pageName]["style"];
-            array_walk($a,function($item) use (&$tpl){
-                $tpl->loadScript($item);
-            });
-        }
+class Router
+{
+    private static $path;
+    private static $pageName;
+    private static $ROUTER_INFO;
+    public static function INIT($path = "include/router.json")
+    {
+        $page = explode("/", $_SERVER['PHP_SELF']);
+        self::$path = $path;
+        self::$pageName = $page[count($page) - 1];
+        self::$ROUTER_INFO = json_decode(file_get_contents($path), true);
     }
+    public static function addRouterInfo($name, $infos)
+    {
+        self::$ROUTER_INFO[$name] = $infos;
+        //var_dump(self::$ROUTER_INFO);
+        $a = json_encode(self::$ROUTER_INFO, true);
+        file_put_contents(self::$path, $a);
+        self::createCtrl_file($infos["ctrl"]);
+        self::createTplt_file($infos["template"]);
+        self::createCSS_file($infos["style"]);
+    }
+    private static function createCSS_file($a)
+    {
+        array_walk($a, function ($item) {
+            if (!file_exists("../_css/$item"))
+                file_put_contents("../_css/$item", "/**Ici le contenu CSS de la page");
+        });
+
+    }
+    private static function createCtrl_file($filename)
+    {
+        if (!file_exists("../_ctrl/$filename"))
+            file_put_contents("../_ctrl/$filename", "<?php \n//ici le code PHP de la page");
+    }
+    private static function createTplt_file($filename)
+    {
+        if (!file_exists("../_template/$filename"))
+            file_put_contents("../_template/$filename", "<!--ICI LE TEMPLATE SPECIFIQUE DE VOTRE PAGE-->");
+    }
+    public static function getCtrl()
+    {
+        return "_ctrl/" . self::$ROUTER_INFO[self::$pageName]["ctrl"] ?? false;
+
+    }
+    public static function getView(): string
+    {
+        return self::$ROUTER_INFO[self::$pageName]["view"] ?? false;
+    }
+    private static function getTemplate()
+    {
+        return self::$ROUTER_INFO[self::$pageName]["template"] ?? false;
+    }
+    public static function setMainTemplate(&$tpl, $name)
+    {
+        $tpl->callTemplate($name, Router::getTemplate());
+    }
+    /**
+     * @param EasyTemplate $tpl
+     */
+    public static function LoadStyles(&$tpl)
+    {
+        $a = self::$ROUTER_INFO[self::$pageName]["style"] ?? "no";
+        if ($a == "no")
+            return;
+        array_walk($a, function ($item) use (&$tpl) {
+            $tpl->loadScript($item);
+        });
+    }
+}
 ?>

@@ -18,9 +18,9 @@ class Autoloader
     {
         require '_class/' . $class . '.class.php';
     }
-    static function callRequires()
+    static function callRequires($uri="_class/_master")
     {
-        $files = scandir("_class/_master");
+        $files = scandir($uri);
      //   var_dump($files);
         array_walk($files,function($item,$key){
             if($item!="autoload.class.php" && $item!="." && $item!="..")

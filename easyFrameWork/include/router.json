@@ -1,9 +1,26 @@
 {
-    "index.php":{
-        "template":"index.tpl",
-        "ctrl":"index.ctrl.php",
-        "style":[
+    "index.php": {
+        "view": ".\/sqlView\/index",
+        "template": "index.tpl",
+        "ctrl": "index.ctrl.php",
+        "style": [
             "index.css"
+        ]
+    },
+    "page.php": {
+        "view": ".\/sqlView\/",
+        "template": "page.tpl",
+        "ctrl": "page.ctrl.php",
+        "style": [
+            "style.css"
+        ]
+    },
+    "test.php": {
+        "view": ".\/sqlView\/",
+        "template": "test.tpl",
+        "ctrl": "test.ctrl.php",
+        "style": [
+            "test.css"
         ]
     }
 }

@@ -1,10 +1,3 @@
 <?php
-$index_array = [
-    [
-        "val" => "test 1"
-    ],
-    [
-        "val" => "test 2"
-    ]
-];
-$template->loop("maboucle", $index_array);
+$mdp="123456";
+echo easyFrameWork::encrypt_decrypt(easyFrameWork::ENC,$mdp);

@@ -1,0 +1,107 @@
+<?php
+abstract class SqlToElement
+{
+    /**
+     * @var SQLFactoryV2
+*/
+    private $SQLF;
+    /**
+     * @param $sqlfactory SQLFactoryV2
+     */
+   
+    public function __construct($sqlfactory)
+    {
+        $this->SQLF = $sqlfactory;
+
+    }
+
+    public function getFactory():SQLFactoryV2{return $this->SQLF;}
+    /**
+     * @param $param array
+     */
+    public function generate($param): string
+    {
+        return "";
+    }
+}
+class SqlToForm extends SqlToElement{
+public function generate($param): string
+    {
+        $url = $param["URI"];
+        $method = $param["METHOD"];
+        if (key_exists("table", $param)) {
+            
+            $result = parent::getFactory()->getColumns($param["table"]);
+        }
+        //var_dump($result);
+        $return = array_reduce($result, function ($carry, $item) use ($param) {
+            // var_dump($item);
+            if (!in_array($item["NAME"], $param["ignoreFields"])) {
+                $type = "";
+                switch ($item["TYPE"]) {
+                    case "varchar": {
+                            $type = "text";
+                            break;
+                        }
+                    case "date": {
+                            $type = "date";
+                            break;
+                        }
+                    default: {
+                            $type = "text";
+                            break;
+                        }
+                }
+                $label = ($param["label"]) ? "<label for=\"" . strtolower($item["NAME"]) . "\">" . strtolower($item["NAME"]) . "</label>" : "";
+                if (isset($item["TABLE_ASSOC"])) {
+                    $assocField = $param["ASSOC_FIELDS"][$item["NAME"]];
+                    $fields =  parent::getFactory()->execQuery("SELECT " . $item["NAME"] . ", $assocField FROM " . $item["TABLE_ASSOC"]);
+                    $select = array_reduce($fields, function ($carry, $_item) use ($item, $assocField) {
+                        $carry .= "<option value=\"" . $_item[$item["NAME"]] . "\">" . $_item[$assocField] . "</option>";
+                        return $carry;
+                    });
+                    $carry .= "<div class=\"form_control\">
+        $label <select id=\"" . strtolower($item["NAME"]) . "\"name=\"" . $item["NAME"] . "\"placeholder=\"Séléctionner une valeur\"> $select</select>
+            </div>";
+                } else {
+                    $carry .= "<div class=\"form_control\">   $label
+                       <input id=\"" . strtolower($item["NAME"]) . "\" type=\"$type\" name=\"" . $item["NAME"] . "\">
+                </div>";
+                }
+            }
+            return $carry;
+        }, "");
+        return "<form action=\"$url\" method=\"$method\">$return<button type=\"\">Envoyer</button></form>";
+    }
+}
+class SQLtoView extends SqlToElement{
+    /**
+     * @var string
+     */
+    private $view;
+    public function __construct($sqlfactory,$view=""){
+        parent::__construct($sqlfactory);
+        if($view!="")
+            $this->view=file_get_contents($view);
+    }
+    public function generate($param):string{
+        $factory=parent::getFactory();
+        $result=$factory->execQuery($param["query"]);
+        if(key_exists("view",$param))
+            $this->view=$param["view"];
+        if($this->view==null){
+            throw new Exception("No view parameter");
+        }else
+        $return = array_reduce($result, function ($carry, $item) {
+            $carry.=$this->view;
+            foreach($item as $key=>$value){
+                $carry=str_replace("#$key#",$value,$carry);
+            }
+            return $carry;
+        });
+        if(key_exists("container",$param)){
+            $return=str_replace("[...]",$return,$param["container"]);
+        }
+        return $return;
+    }
+}

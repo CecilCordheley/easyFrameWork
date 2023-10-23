@@ -1,11 +1,14 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="fr">
     <head>
         <title>TEST EasyTemplate</title>
         <link rel="stylesheet" href="_css/style.css">
     </head>
     <body>
-        <h1>TEMPLATE MASTER</h1>
-        {var:mainContent}
+        <div class="container">
+            <footer>Ici le pied de page</footer>
+            <main>{var:mainContent}</main>
+            <header><h1>Exemple de site</h1></header>
+        </div>
     </body>
 </html>
