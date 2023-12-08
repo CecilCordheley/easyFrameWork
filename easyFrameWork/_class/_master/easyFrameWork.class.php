@@ -1,47 +1,41 @@
 <?php
 class easyFrameWork
 {
-    private const ENC_KEY="1236ab";
-    private const SECRET_IV= "aesd56";
-    public const ENC = "encrypt";
-    public const DEC = "decrypt";
-    public const FILE_FORMAT_PHP=".php";
-    public const FILE_FORMAT_TPL=".tpl";
-    public const FILE_FORMAT_CTRL=".ctrl.php";
-    public const FILE_FORMAT_CSS=".css";
+    private static $ENCRYPT_BLOCK_SIZE = 200;
 
-    public static function getParams($configName,$path="include/config.ini"){
+    //Block size for decryption block cipher
+    private static $DECRYPT_BLOCK_SIZE = 256;
+
+    public static function getParams($configName, $path = "include/config.ini")
+    {
         $ini = parse_ini_file($path, true);
         return $ini[$configName];
     }
-    public static function encrypt_decrypt($action, $string): string
+    public static function encrypt($plainData, $key)
     {
-        $output = false;
-
-        $encrypt_method = "AES-256-CBC";
-        $secret_key = self::ENC_KEY;
-        $secret_iv = self::SECRET_IV;
-
-        // hash
-        $key = hash('sha256', $secret_key);
-
-        // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
-        $iv = substr(hash('sha256', $secret_iv), 0, 16);
-
-        if ($action == 'encrypt') {
-            $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
-            $output = base64_encode($output);
-        } else if ($action == 'decrypt') {
-            $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
-        }
-
-        return $output;
+        $ciphering = "AES-128-CTR";
+        $iv_length = openssl_cipher_iv_length($ciphering);
+        $encryption_iv = '1234567891011121';
+        $encryption = openssl_encrypt($plainData, $ciphering,
+        $key, 0, $encryption_iv);
+        return $encryption;
     }
-    public static function INIT($uri="./_class/_master/",$path="include/router.json")
+
+    //For decryption we would use:
+    public static function decrypt($content, $key)
     {
-        if(file_exists("$uri/autoload.class.php"))
+        $ciphering = "AES-128-CTR";
+        $iv_length = openssl_cipher_iv_length($ciphering);
+        $encryption_iv = '1234567891011121';
+        $encryption = openssl_decrypt($content, $ciphering,
+        $key, 0, $encryption_iv);
+        return $encryption;
+    }
+    public static function INIT($uri = "./_class/_master/", $path = "include/router.json")
+    {
+        if (file_exists("$uri/autoload.class.php"))
             require_once "$uri/autoload.class.php";
-        else{
+        else {
             throw new Exception("$uri doesn't exists on the current context");
         }
         Autoloader::register();

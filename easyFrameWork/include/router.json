@@ -16,11 +16,29 @@
         ]
     },
     "test.php": {
-        "view": ".\/sqlView\/",
         "template": "test.tpl",
         "ctrl": "test.ctrl.php",
+        "style": []
+    },
+    "ecole.php": {
+        "template": "ecole.tpl",
+        "ctrl": "ecole.ctrl.php",
         "style": [
-            "test.css"
+            "ecole.css"
+        ]
+    },
+    "formBuilder_exemple.php": {
+        "template": "formBuilder.tpl",
+        "ctrl": "frmBuilder.ctrl.php",
+        "style": [
+            "frmBuilder.css"
+        ]
+    },
+    "sqlView.php": {
+        "template": "sqlView.tpl",
+        "ctrl": "sqlView.ctrl.php",
+        "style": [
+            "sqlview.css"
         ]
     }
 }
