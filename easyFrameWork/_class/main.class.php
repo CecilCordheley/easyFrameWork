@@ -1,20 +1,18 @@
 <?php
-class Main
-{
-    public static $links = [
+class Main{
+    public static $links=[
         [
-            "href" => "sqlView.php",
-            "PageName" => "Exemple de Vue SQL"
-        ], [
-            "href" => "message/last.html",
-            "PageName" => "derniers messages"
-        ], [
-            "href" => "topic.php",
-            "PageName" => "Topic",
-            "title" => "tout les sujets"
-        ], [
-            "href" => "chat.php",
-            "PageName" => "Accès au chat"
+            "href"=>"index.php",
+            "pageName"=>"Acceuil"
+        ],[
+            "href"=>"ecole.php",
+            "pageName"=>"Ecoles"
+        ],[
+            "href"=>"formBuilder_exemple.php",
+            "pageName"=>"FormBuilder"
+        ],[
+            "href"=>"error.php",
+            "pageName"=>"une erreur"
         ]
     ];
 }

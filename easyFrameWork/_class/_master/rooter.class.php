@@ -9,20 +9,7 @@ class Router
         $page = explode("/", $_SERVER['PHP_SELF']);
         self::$path = $path;
         self::$pageName = $page[count($page) - 1];
-  //      echo $page[count($page) - 1];
         self::$ROUTER_INFO = json_decode(file_get_contents($path), true);
-        if (isset(self::$ROUTER_INFO[self::$pageName]["parent"])) {
-            if (self::$ROUTER_INFO[self::$pageName]["GET"]) {
-                $GET=self::$ROUTER_INFO[self::$pageName]["GET"][0];
-                    foreach($GET as $key=>$value)
-                        Request::set($key, $value);
-                
-            }else{
-
-            }
-            self::$pageName = self::$ROUTER_INFO[self::$pageName]["parent"];
-        }
-        //   var_dump(self::$pageName);
     }
     public static function addRouterInfo($name, $infos)
     {
@@ -40,6 +27,7 @@ class Router
             if (!file_exists("../_css/$item"))
                 file_put_contents("../_css/$item", "/**Ici le contenu CSS de la page");
         });
+
     }
     private static function createCtrl_file($filename)
     {
@@ -49,11 +37,12 @@ class Router
     private static function createTplt_file($filename)
     {
         if (!file_exists("../_template/$filename"))
-            file_put_contents("../_template/$filename", "<!--ICI LE TEMPLATE SPECIFIQUE DE $filename-->");
+            file_put_contents("../_template/$filename", "<!--ICI LE TEMPLATE SPECIFIQUE DE VOTRE PAGE-->");
     }
     public static function getCtrl()
     {
         return "_ctrl/" . self::$ROUTER_INFO[self::$pageName]["ctrl"] ?? false;
+
     }
     public static function getView(): string
     {
@@ -61,12 +50,10 @@ class Router
     }
     private static function getTemplate()
     {
-        //  var_dump(self::$ROUTER_INFO[self::$pageName]["template"]);
         return self::$ROUTER_INFO[self::$pageName]["template"] ?? false;
     }
-    public static function setMainTemplate(EasyTemplate &$tpl, $name)
+    public static function setMainTemplate(&$tpl, $name)
     {
-        // var_dump();
         $tpl->callTemplate($name, Router::getTemplate());
     }
     /**
@@ -82,3 +69,4 @@ class Router
         });
     }
 }
+?>

@@ -85,6 +85,7 @@ class SQLtoView extends SqlToElement{
             $this->view=file_get_contents($view);
     }
     public function generate($param):string{
+        $i=0;
         $factory=parent::getFactory();
         $result=$factory->execQuery($param["query"]);
         if(key_exists("view",$param))
@@ -92,16 +93,27 @@ class SQLtoView extends SqlToElement{
         if($this->view==null){
             throw new Exception("No view parameter");
         }else
-        $return = array_reduce($result, function ($carry, $item) {
-            $carry.=$this->view;
-            foreach($item as $key=>$value){
-                $carry=str_replace("#$key#",$value,$carry);
+        $return = array_reduce($result, function ($carry, $item) use($param,&$i) {
+            if(key_exists("callback",$param)){
+                $carry["str"].=call_user_func($param["callback"],$item,$carry["previous"],$this->view);
+            }else{
+                $carry["str"].=$this->view;
             }
+            foreach($item as $key=>$value){
+                $carry["str"]=str_replace("#$key#",$value,$carry["str"]);
+            }
+            $carry["previous"]=$item;
+           // echo $i.$carry["str"];
+            $i++;
+            
             return $carry;
-        });
+        },[
+            "str"=>"",
+            "previous"=>null
+        ]);
         if(key_exists("container",$param)){
-            $return=str_replace("[...]",$return,$param["container"]);
+            $return["str"]=str_replace("[...]",$return["str"],$param["container"]);
         }
-        return $return;
+        return $return["str"];
     }
 }

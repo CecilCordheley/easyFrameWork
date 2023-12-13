@@ -22,6 +22,13 @@ $index_array = [
         "val" => "test 2"
     ]
 ];
+$personne=[
+    ["nom"=>"Enstein","prenom"=>"Albert"],
+    ["nom"=>"Eluard","prenom"=>"Paul"],
+    ["nom"=>"Poisson","prenom"=>"Reinette"],
+    ["nom"=>"Ari","prenom"=>"Mata"]
+    ];
+    $template->loop("personne",$personne);
 //var_dump($sqlF->getStorageFnc());
 $param=["container"=>"<div class='academieList'>[...]</div>",
 "query"=>"SELECT COUNT(ID_ECOLE) as NBECOLE, NOM_ACADEMIE FROM academie_tbl a LEFT JOIN ECOLE_TBL e ON a.ID_ACADEMIE=e.ID_ACADEMIE GROUP BY e.ID_ACADEMIE"];

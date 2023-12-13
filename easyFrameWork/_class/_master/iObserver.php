@@ -2,7 +2,7 @@
 
 interface ISubject{
     public function attach($obs);
-    public function dettach($obs);
+    public function detach($obs);
     public function notifyObs();
 }
 

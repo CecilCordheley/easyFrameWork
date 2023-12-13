@@ -21,8 +21,8 @@ class SQLFactoryV2
         $r = $this->getStorageFnc();
         //   var_dump($r[0]);
         $this->routine_fnc = array_reduce($r, function ($carry, $item) {
-            $fncName = $item["ROUTINE_NAME"]??$item["routine_name"];
-            $carry[$fncName]["type"] = $item["DATA_TYPE"]??$item["data_type"];
+            $fncName = $item["ROUTINE_NAME"];
+            $carry[$fncName]["type"] = $item["DATA_TYPE"];
 
             $carry[$fncName]["exec"] = function ($args) use ($fncName) {
                 $argsString = [];
@@ -45,16 +45,6 @@ class SQLFactoryV2
             $carry[] = $item["COLUMN_NAME"];
             return $carry;
         }, []);
-    }
-    public function get($table,$filter){
-        if (key_exists($table, $this->tables)) {
-            $sth = $this->PDO->query("SELECT * FROM $table WHERE 1=1 AND $filter");
-            $arr = $sth->fetchAll(PDO::FETCH_ASSOC);
-            $sth->closeCursor();
-            return $arr;
-        } else {
-            throw new Exception("$table doesn't exist in the current schema");
-        }
     }
     public function getColumns($table){
         $i=0;
@@ -132,16 +122,10 @@ class SQLFactoryV2
     }
     public function execQuery($query)
     {
-       
         $sth = $this->PDO->query($query);
-        try{
         $arr = $sth->fetchAll(PDO::FETCH_ASSOC);
         $sth->closeCursor();
         return $arr;
-        }catch(PDOException $e){
-            echo $e->getMessage();
-        }
-        
     }
     public function execFnc($fncName, $args)
     {
