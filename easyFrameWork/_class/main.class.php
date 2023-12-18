@@ -1,5 +1,5 @@
 <?php
-class Main{
+abstract class Main{
     public static $links=[
         [
             "href"=>"index.php",
@@ -13,6 +13,11 @@ class Main{
         ],[
             "href"=>"error.php",
             "pageName"=>"une erreur"
+        ],[
+            "href"=>"sqlEntities.php",
+            "pageName"=>"SQL Entities"
         ]
     ];
+
+    public const KEY="123@ijk";
 }

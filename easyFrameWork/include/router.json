@@ -34,11 +34,8 @@
             "frmBuilder.css"
         ]
     },
-    "sqlView.php": {
-        "template": "sqlView.tpl",
-        "ctrl": "sqlView.ctrl.php",
-        "style": [
-            "sqlview.css"
-        ]
+    "error_trigger.php": {
+        "template": "error.tpl",
+        "ctrl": "error.ctrl.php"
     }
 }

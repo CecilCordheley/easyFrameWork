@@ -6,9 +6,9 @@ class SQLFactoryV2
     private $tables;
     private $routine_fnc;
     private $ini;
-    public function __construct($PDO = null,$configPath="include/config.ini")
+    public function __construct($PDO = null, $configPath = "include/config.ini")
     {
-        $this->ini = easyFrameWork::getParams("BDD",$configPath);
+        $this->ini = easyFrameWork::getParams("BDD", $configPath);
         $this->PDO = $PDO ?? new PDO('mysql:host=' . $this->ini["host"] . ';dbname=' . $this->ini["bdd"], $this->ini["user"], $this->ini["mdp"]);
         $this->tables = [];
         $t = $this->getTableSchema();
@@ -21,8 +21,8 @@ class SQLFactoryV2
         $r = $this->getStorageFnc();
         //   var_dump($r[0]);
         $this->routine_fnc = array_reduce($r, function ($carry, $item) {
-            $fncName = $item["ROUTINE_NAME"];
-            $carry[$fncName]["type"] = $item["DATA_TYPE"];
+            $fncName = $item["ROUTINE_NAME"]??$item["routine_name"];
+            $carry[$fncName]["type"] = $item["DATA_TYPE"]??$item["data_type"];
 
             $carry[$fncName]["exec"] = function ($args) use ($fncName) {
                 $argsString = [];
@@ -46,25 +46,26 @@ class SQLFactoryV2
             return $carry;
         }, []);
     }
-    public function getColumns($table){
-        $i=0;
+    public function getColumns($table)
+    {
+        $i = 0;
         return array_reduce($this->execQuery("SELECT COLUMN_NAME,EXTRA,COLUMN_KEY,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_SCHEMA = '" . $this->ini["bdd"] . "'
-          AND TABLE_NAME = '$table'"), function ($carry, $item) use(&$i,$table){
+          AND TABLE_NAME = '$table'"), function ($carry, $item) use (&$i, $table) {
             $carry[$i]["NAME"] = $item["COLUMN_NAME"];
-            $carry[$i]["PRIMARY"]=$item["COLUMN_KEY"];
-            if($item["COLUMN_KEY"]=="MUL"){
-                $t=$this->execQuery("SELECT TABLE_NAME
+            $carry[$i]["PRIMARY"] = $item["COLUMN_KEY"];
+            if ($item["COLUMN_KEY"] == "MUL") {
+                $t = $this->execQuery("SELECT TABLE_NAME
                 FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE COLUMN_NAME LIKE '%".$carry[$i]["NAME"]."%'
+                WHERE COLUMN_NAME LIKE '%" . $carry[$i]["NAME"] . "%'
                 AND TABLE_NAME <>'$table';");
-                $carry[$i]["TABLE_ASSOC"]=$t[0]["TABLE_NAME"];
+                $carry[$i]["TABLE_ASSOC"] = $t[0]["TABLE_NAME"];
             }
             $carry[$i]["TYPE"] = $item["DATA_TYPE"];
-            if($item["COLUMN_KEY"]=="PRI")
-            $carry[$i]["AUTO_INCR"] = ($item["EXTRA"]=="auto_increment")?"YES":"NO";
-            $carry[$i]["LENGHT"]=($item["DATA_TYPE"]=="varchar")?$item["CHARACTER_MAXIMUM_LENGTH"]:"";
+            if ($item["COLUMN_KEY"] == "PRI")
+                $carry[$i]["AUTO_INCR"] = ($item["EXTRA"] == "auto_increment") ? "YES" : "NO";
+            $carry[$i]["LENGHT"] = ($item["DATA_TYPE"] == "varchar") ? $item["CHARACTER_MAXIMUM_LENGTH"] : "";
             $i++;
             return $carry;
         }, []);
@@ -83,21 +84,19 @@ class SQLFactoryV2
     }
     public function addItem($item, $table)
     {
-        if (in_array($table, $this->tables)) {
-            $query = "INSERT INTO $table (#K#) VALUES (#VALUES#)";
-            $k = [];
-            $v = [];
-            foreach ($item as $key => $values) {
-                $k[] = $key;
 
-                $v[] = $values != null ? "\"$values\"" : "null";
-            }
-            $query = str_replace("#K#", implode(",", $k), $query);
-            $query = str_replace("#VALUES#", implode(",", $v), $query);
-            return $this->execQuery($query);
-        } else {
-            throw new Exception("$table doesn't exist in the current schema");
+        $query = "INSERT INTO $table (#K#) VALUES (#VALUES#)";
+        $k = [];
+        $v = [];
+        foreach ($item as $key => $values) {
+            $k[] = $key;
+
+            $v[] = $values != null ? "\"$values\"" : "null";
         }
+        $query = str_replace("#K#", implode(",", $k), $query);
+        $query = str_replace("#VALUES#", implode(",", $v), $query);
+        return $this->execQuery($query);
+
     }
     public function deleteItem($id, $table)
     {

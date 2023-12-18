@@ -4,14 +4,16 @@
 if (Query::hasPostValues()) {
     $vars->formTest = Query::get("test_name");
 } else {
-    $pattenr="\n<div class='compoment'>\n".
+    $pattern="\n<div class='compoment'>\n".
     "\t<label for=\"[#ID#]\">[#label#]</label>\n".
-    "\t<input  id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#]>\n".
+    "\t<input  id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#] [#required#]>\n".
     "</div>";
-    $form = new FormBuilder(Server::GetSelF() . "?action=test", "POST",$pattenr);
+    $form = new FormBuilder(Server::GetSelF() . "?action=test", "POST",$pattern);
     $form->addCompoment([
         "ID" => "test",
         "type" => "text",
+        'required'=>true,
+        "className"=>"testClass",
         "name" => "test_name",
         "label"=>"Ici le nom"
     ])
@@ -32,6 +34,7 @@ if (Query::hasPostValues()) {
     ])->addCompoment([
         "ID"=>"testSelect",
         "type"=>"select",
+        "className"=>"classSelect",
         "name"=>"selectExemple",
         "label"=>"test Select",
         "multiple"=>true,
@@ -48,5 +51,5 @@ if (Query::hasPostValues()) {
             ]
         ]
     ]);
-    $vars->formTest = $form->generate();
+    $vars->formTest = $form->generate(["submit"=>"<div><button class='submit'>Enregistrer</button></div>","reset"=>""]);
 }

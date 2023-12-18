@@ -5,7 +5,6 @@ Autoloader::callRequires();
 Router::Init();
 $template=new easyTemplate();
 $vars=new EasyTemplate_variable();
-$template->loop("menu",Main::$links);
 //$template->callTemplate("mainContent",Router::getTemplate());
 Router::setMainTemplate($template,"mainContent");
 include(Router::getCtrl());

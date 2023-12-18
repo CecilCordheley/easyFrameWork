@@ -13,7 +13,7 @@
             <menu>
             {LOOP:menu}
             <li>
-                <a href="{#href#}">{#PageName#}</a>
+                <a href="{#href#}">{#pageName#}</a>
             </li>
             {/LOOP}
             </menu>

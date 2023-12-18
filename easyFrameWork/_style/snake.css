@@ -1,0 +1,21 @@
+#mainContent{
+    flex-direction: column;
+}
+#game{
+    background: #555;
+    width: 480px;
+    height: 320px;
+    align-self: center;
+    margin: 4px;
+}
+.container{
+    height: 650px;
+}
+#contentGame{
+    display: flex;
+}
+#contentGame table{
+    width: 500px;
+}
+th.title{background:#55B}
+.adsence{width: 150px;}

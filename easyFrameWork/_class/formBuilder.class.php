@@ -31,7 +31,7 @@ class FormBuilder
         }
         return $this;
     }
-    public function generate()
+    public function generate($footer=[])
     {
         $return = "<form action=[#action#] method=[#methode#]>[...]</form>";
         $return = str_replace("[#action#]", $this->action, $return);
@@ -74,6 +74,18 @@ class FormBuilder
             $compoment = str_replace("[#ID#]", $key, $compoment);
             $return = str_replace("[...]", " $compoment [...]\n", $return);
         });
+        $submit="<button type='submit'>Valider</button>";
+        $reset="<button type='reset'>Effacer</button>";
+        if(count($footer)){
+            if(isset($footer["submit"])){
+                $submit=$footer["submit"];
+            }
+            if(isset($footer["reset"])){
+                $reset=$footer["reset"];
+            }
+        }
+        $return = str_replace("[...]", "$submit [...]", $return);
+        $return = str_replace("[...]", "$reset [...]", $return);
         $return = str_replace("[...]", "", $return);
         return $return;
     }

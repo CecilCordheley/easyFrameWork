@@ -1,0 +1,19 @@
+2023/12/12 : 09:58:08 - No [E_USER_NOTICE] - Erreur : Attempt to read property "path" on string - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\globalManager.class.php - Ligne :173
+2023/12/12 : 09:59:06 - No [E_USER_NOTICE] - Erreur : Attempt to read property "value" on string - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\globalManager.class.php - Ligne :173
+2023/12/13 : 09:58:41 - No [E_USER_NOTICE] - Erreur : Array to string conversion - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\sqlToElement.class.php - Ligne :101
+2023/12/13 : 09:59:39 - No [E_USER_NOTICE] - Erreur : Array to string conversion - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\sqlToElement.class.php - Ligne :101
+2023/12/13 : 10:11:11 - No [E_USER_NOTICE] - Erreur : Array to string conversion - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\sqlToElement.class.php - Ligne :101
+2023/12/13 : 10:11:45 - No [E_USER_NOTICE] - Erreur : {closure}(): Argument #3 ($defaultString) must be passed by reference, value given - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\sqlToElement.class.php - Ligne :102
+2023/12/13 : 10:14:50 - No [E_USER_NOTICE] - Erreur : Trying to access array offset on value of type null - Fichier : C:\wamp64\www\easyFrameWork\_ctrl\index.ctrl.php - Ligne :29
+2023/12/13 : 10:18:20 - No [E_USER_NOTICE] - Erreur : {closure}(): Argument #3 ($defaultString) must be passed by reference, value given - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\sqlToElement.class.php - Ligne :98
+2023/12/18 : 09:30:21 - No [E_USER_NOTICE] - Erreur : fopen(_template/): Failed to open stream: No such file or directory - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\easyTemplate.class.php - Ligne :142
+2023/12/18 : 09:46:00 - No [E_USER_NOTICE] - Erreur : file_get_contents(../SQLEntities/EntityModel): Failed to open stream: No such file or directory - Fichier : C:\wamp64\www\easyFrameWork\_class\SqlEntities.class.php - Ligne :7
+2023/12/18 : 09:46:44 - No [E_USER_NOTICE] - Erreur : file_put_contents(&lt;?php
+ class EleveTbl{
+    [%attr%]
+ }): Failed to open stream: No such file or directory - Fichier : C:\wamp64\www\easyFrameWork\_class\SqlEntities.class.php - Ligne :16
+2023/12/18 : 10:02:18 - No [E_USER_NOTICE] - Erreur : Undefined property: EleveTbl::$attributs - Fichier : C:\wamp64\www\easyFrameWork\SQLEntities\elevetbl.class.php - Ligne :12
+2023/12/18 : 10:03:03 - No [E_USER_NOTICE] - Erreur : Undefined property: EleveTbl::$attributs - Fichier : C:\wamp64\www\easyFrameWork\SQLEntities\elevetbl.class.php - Ligne :12
+2023/12/18 : 16:10:27 - No [E_USER_NOTICE] - Erreur : Undefined array key "ROUTINE_NAME" - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\SQLFactory.class.php - Ligne :24
+2023/12/18 : 16:12:10 - No [E_USER_NOTICE] - Erreur : Undefined array key "DATA_TYPE" - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\SQLFactory.class.php - Ligne :25
+2023/12/18 : 16:14:44 - No [E_USER_NOTICE] - Erreur : Undefined variable $param - Fichier : C:\wamp64\www\easyFrameWork\_ctrl\index.ctrl.php - Ligne :35

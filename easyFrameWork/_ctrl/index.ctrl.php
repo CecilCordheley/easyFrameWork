@@ -22,17 +22,17 @@ $index_array = [
         "val" => "test 2"
     ]
 ];
-$personne=[
-    ["nom"=>"Enstein","prenom"=>"Albert"],
-    ["nom"=>"Eluard","prenom"=>"Paul"],
-    ["nom"=>"Poisson","prenom"=>"Reinette"],
-    ["nom"=>"Ari","prenom"=>"Mata"]
-    ];
-    $template->loop("personne",$personne);
 //var_dump($sqlF->getStorageFnc());
-$param=["container"=>"<div class='academieList'>[...]</div>",
-"query"=>"SELECT COUNT(ID_ECOLE) as NBECOLE, NOM_ACADEMIE FROM academie_tbl a LEFT JOIN ECOLE_TBL e ON a.ID_ACADEMIE=e.ID_ACADEMIE GROUP BY e.ID_ACADEMIE"];
-$template->_view("academie",$SQL2V,$param);
+/*$param=["container"=>"<div class='academieList'>[...]</div>",
+"query"=>"SELECT NOM_ELEVE, PRENOM_ELEVE, NOM_ECOLE FROM eleve_tbl e1 LEFT JOIN ECOLE_TBL e2 ON e1.ID_ECOLE=e2.ID_ECOLE",
+"callback"=>function($item,$previous,$defaultString){
+    if($previous==null || $previous["NOM_ECOLE"]!=$item["NOM_ECOLE"])
+        return "<h3>#NOM_ECOLE#</h3>$defaultString";
+    else
+        return $defaultString;
+}];*/
+//$vars->str=easyFrameWork::hashString("123456",Main::KEY,easyFrameWork::HASH_ALGO["SHA256"]);
+//$template->_view("academie",$SQL2V,$param);
 //$vars->academie=$SQL2V->generate(["query"=>"SELECT * FROM academie_tbl"]);
 //if(!isset($_GET["action"]))
 //$vars->userForm=$SQL2FROM->generate(["URI"=>"addEleve.html","METHOD"=>"POST","ASSOC_FIELDS"=>["ID_ECOLE"=>"NOM_ECOLE"],"table"=>"eleve_tbl","label"=>true,"ignoreFields"=>["ID_ELEVE"]]);

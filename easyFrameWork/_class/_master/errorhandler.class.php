@@ -89,7 +89,7 @@ class ErrorHandler implements ISubject
                 $content = file_get_contents($filePath);
                 $content .= "\n-----------------------";
             } else {
-                echo "Le fichier n'existe pas. Création...\n";
+            //    echo "Le fichier n'existe pas. Création...\n";
                 $content = "";
             }
 

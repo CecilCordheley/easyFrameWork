@@ -1,0 +1,93 @@
+#mainContent {
+    flex-direction: column;
+}
+
+#mainContent p {
+    width: 80%;
+    margin: 0 auto;
+}
+
+#mainGameList {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+#mainGameList .game_ {
+    background-color: transparent;
+    border-radius: 10px;
+    margin: 5px;
+    width: 250px;
+    height: 175px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    perspective: 1000px;
+}
+
+.game_  h2 {
+    font-size: 1.2rem;
+    z-index: 1;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 250px;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.game_:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+.game_:hover .game_  h2{
+    z-index: 0;
+}
+/* Position the front and back side */
+.front,
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    /* Safari */
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Style the front side (fallback if image is missing) */
+.front {
+    background-color: #3A2EAA;
+    color: #FFF;
+}
+.front img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    /* Safari */
+    backface-visibility: hidden;
+    z-index: 0;
+}
+/* Style the back side */
+.back {
+    background-color: dodgerblue;
+    z-index: 1;
+    transform: rotateY(180deg);
+}
+.back a{
+    color: #A2A;
+    transition: .7s;
+}
+.back a:hover{
+    color: #3A2EAA;
+    transform: scale(2);
+}

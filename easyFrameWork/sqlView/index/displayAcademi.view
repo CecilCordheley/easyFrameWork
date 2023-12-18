@@ -1,4 +1,4 @@
 <div class="academie">
-    <span>#NOM_ACADEMIE#</span>
-    <strong>#NBECOLE#</strong>
+       <span>#NOM_ELEVE#</span>
+       <span>#PRENOM_ELEVE#</span>
 </div>

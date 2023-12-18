@@ -3,15 +3,3 @@
 {view:academie}
 <a href="ecole-1.html">Voir l'école</a>
 <div>{var:userForm}</div>
-<table>
-	<tr>
-		<th>NOM</th>
-		<th>PRENOM</th>
-	</tr>
-{LOOP:personne}
-<tr>
-	<td>{#nom#}</td>	
-	<td>{#prenom#}</td>
-</tr>
-{/LOOP}
-</table>
