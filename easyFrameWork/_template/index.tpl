@@ -3,3 +3,5 @@
 {view:academie}
 <a href="ecole-1.html">Voir l'école</a>
 <div>{var:userForm}</div>
+{comment:ceci est un test}
+{var:str}

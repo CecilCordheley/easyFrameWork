@@ -1,5 +1,5 @@
 <?php
 class MaClass{
-    public static function test(){echo "TEST";}
+    public static function test():string{return "TEST";}
 }
 ?>

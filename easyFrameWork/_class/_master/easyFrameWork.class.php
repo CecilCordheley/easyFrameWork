@@ -41,10 +41,73 @@ abstract class easyFrameWork
         "HAVAL224,5" => "haval224,5",
         "HAVAL256,5" => "haval256,5"
     ];
-    public static function toCamelCase($input) {
-        return preg_replace_callback('/(?:^|_)([a-z])/', function($matches) {
+    /**
+     * permet d'appelé un template
+     * @param string $name nom du microtemplate
+     * @param string $path chemin d'accès du fichier des microtemplate
+     */
+    public static function getMicroTemplate($name, $path = "include/microtpl.json")
+    {
+        $json = json_decode(file_get_contents($path), true);
+
+        if (gettype($json[$name]) == "array") {
+            return implode($json[$name]);
+        } else
+            return $json[$name];
+    }
+    /**
+     * format une chaine de caractère en camel Case
+     * @param string $input chaine a transformée
+     * @return string
+     */
+    public static function toCamelCase($input)
+    {
+        return preg_replace_callback('/(?:^|_)([a-z])/', function ($matches) {
             return strtoupper($matches[1]);
         }, $input);
+    }
+    public static function testClassMethode($fnc,$result,$args){
+        $arr = [];
+        $arr["Expected"]=$result;
+        $reflection = new ReflectionMethod($fnc);
+        $start = microtime(true);
+        $return = call_user_func_array($fnc, $args);
+        $end = microtime(true);
+        $time = ($end - $start);
+        if ($reflection->hasReturnType()) {
+            $arr["Result"]=$return;
+            if ($return === $result) {
+                $arr["Test"] = "OK";
+            } else
+                $arr["Test"] = "KO";
+
+        }
+        $arr["execTime"] = $time;
+        $arr["file"] = $reflection->getFileName();
+        $arr["name"] = $reflection->getName();
+        return $arr;
+    }
+    public static function testFnc($fnc, $result, $args)
+    {
+        $arr = [];
+        $arr["Expected"]=$result;
+        $reflection = new ReflectionFunction($fnc);
+        $start = microtime(true);
+        $return = call_user_func_array($fnc, $args);
+        $end = microtime(true);
+        $time = ($end - $start);
+        if ($reflection->hasReturnType()) {
+            $arr["Result"]=$return;
+            if ($return === $result) {
+                $arr["Test"] = "OK";
+            } else
+                $arr["Test"] = "KO";
+
+        }
+        $arr["execTime"] = $time;
+        $arr["file"] = $reflection->getFileName();
+        $arr["name"] = $reflection->getName();
+        return $arr;
     }
     public static function getParams($configName, $path = "include/config.ini")
     {

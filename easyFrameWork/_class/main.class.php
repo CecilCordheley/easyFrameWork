@@ -1,4 +1,7 @@
 <?php
+/**
+ * Ensemble des fonctions communes au projet
+ */
 abstract class Main{
     public static $links=[
         [
@@ -13,11 +16,8 @@ abstract class Main{
         ],[
             "href"=>"error.php",
             "pageName"=>"une erreur"
-        ],[
-            "href"=>"sqlEntities.php",
-            "pageName"=>"SQL Entities"
         ]
     ];
-
+   
     public const KEY="123@ijk";
 }

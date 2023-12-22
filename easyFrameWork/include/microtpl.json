@@ -1,0 +1,7 @@
+{
+    "testTpl":[
+        "<div class=\"test\">",
+        "<p>{var:POP}</p>",
+        "</div>"
+    ]
+}

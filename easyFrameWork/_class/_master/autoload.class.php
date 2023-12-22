@@ -1,4 +1,7 @@
 <?php
+/**
+ * Permet de chargement automatique des classes
+ */
 class Autoloader
 {
 
