@@ -66,7 +66,7 @@ class EasyTemplate
 
     /**
      * Retourne le tableau des variable présentes sur le template
-     * 
+     * @return array
      */
     public function getVariableArray(): array
     {
@@ -76,20 +76,20 @@ class EasyTemplate
             $i = 0;
             array_walk($matches[1], function ($m) use (&$i, &$array) {
                 $tabName = explode(".", $m);
-                $aName = $tabName[0] ?? "";
-                $field = $tabName[1] ?? "";
+                $aName= $tabName[0]??"";
+                $field=$tabName[1]??"";
                 if (count($tabName) > 1) {
-                    $array['array'][$i]['key'] = "$aName.$field";
+                    $array['array'][$i]['key'] = "$aName.$field" ;
                     $v = $this->dictionnary->__get($aName[0]);
 
                     $array['array'][$i]['value'] =
-                        (isset($v[$field])) ? htmlspecialchars($v[$field] ?? '')
+                        (isset($v[$field])) ? htmlspecialchars($v[$field]??'') 
                         : "";
 
                 } else {
                     $array['variable'][$i]['key'] = $m;
                     if (isset($this->dictionnary))
-                        $array['variable'][$i]['value'] = htmlspecialchars($this->dictionnary->__get($m) ?? '');
+                        $array['variable'][$i]['value'] = htmlspecialchars($this->dictionnary->__get($m)??'');
                 }
                 $i++;
             });
@@ -208,22 +208,22 @@ class EasyTemplate
      * @param $sqlView SQLtoView
      * @param $p array
      */
-    public function _view($key, $sqlView, $p)
+    public function _view($key,$sqlView,$p)
     {
-        $pattern = "{view:$key}";
-        $replace = $sqlView->generate($p);
-        $this->content = str_replace($pattern, $replace, $this->content);
+        $pattern="{view:$key}";
+        $replace=$sqlView->generate($p);
+        $this->content=str_replace($pattern,$replace,$this->content); 
         return $this;
     }
     private function matchReplace($m, $key, $type)
     {
         switch ($type) {
-            case "SESSION": {
-                    $context = $m[0];
-                    $name = $m[1];
-                    $this->content = str_replace("{:SESSION context=\"$context\" name=\"$name\"}", (isset($_SESSION[$context][$name])) ? $_SESSION[$context][$name] : "", $this->content);
-                    break;
-                }
+            case "SESSION":{
+                $context=$m[0];
+                $name=$m[1];
+                $this->content = str_replace("{:SESSION context=\"$context\" name=\"$name\"}", (isset($_SESSION[$context][$name])) ? $_SESSION[$context][$name] : "", $this->content);
+                break;
+            }
             case "GET":
                 $this->content = str_replace("{:GET name=\"$m\"}", (isset($_GET[$m])) ? $_GET[$m] : "", $this->content);
                 break;
@@ -233,20 +233,16 @@ class EasyTemplate
     {
         if ($this->dictionnary) {
             $array = $this->getVariableArray();
-            while (count($array["variable"] ?? [])) {
-                if (isset($array["variable"])) {
-                    array_walk($array["variable"], EasyTemplate::class . '::_replace');
-                    unset($array["variable"]);
-                }
-                if (isset($array['array']))
-                    array_walk($array["array"], EasyTemplate::class . '::_replace');
-                if (isset($array["loop"]))
-                    array_walk($array["loop"], EasyTemplate::class . '::_replace');
-                if (isset($array["view"])) {
+
+            if (isset($array["variable"]))
+                array_walk($array["variable"], EasyTemplate::class . '::_replace');
+            if (isset($array['array']))
+                array_walk($array["array"], EasyTemplate::class . '::_replace');
+            if (isset($array["loop"]))
+                array_walk($array["loop"], EasyTemplate::class . '::_replace');
+                if (isset($array["view"])){
                     array_walk($array["view"], EasyTemplate::class . '::_view');
                 }
-                $array = $this->getVariableArray();
-            }
             $this->replaceGetVariable();
             $this->replaceUNICODE();
             if (isset($_SESSION))
@@ -319,30 +315,10 @@ class EasyTemplate
     /**
      * Efface les variables inutilisées ainsi que les commentaires 
      */
-    public function clear($el = [])
+    public function clear()
     {
-        if (count($el)==0) {
-            $this->content = preg_replace("/\{comment\:(.*?)\}/is", "", $this->content);
-            $this->content = preg_replace("/\\{LOOP:.*?\\}(.*?)\\{\\/LOOP\\}/is", "", $this->content);
-            $this->content = preg_replace("/\{view\:(.*?)\}/is", "", $this->content);
-        } else {
-            if(!in_array("COMMENT",$el)){
-                $this->content = preg_replace("/\{comment\:(.*?)\}/is", "<!--$1-->", $this->content);
-            }
-            foreach ($el as $item) {
-                switch ($item) {
-                    case "COMMENT":
-                        $this->content = preg_replace("/\{comment\:(.*?)\}/is", "", $this->content);
-                        break;
-                    case "LOOP":
-                        $this->content = preg_replace("/\\{LOOP:.*?\\}(.*?)\\{\\/LOOP\\}/is", "", $this->content);
-                        break;
-                    case "VIEW":
-                        $this->content = preg_replace("/\{view\:(.*?)\}/is", "", $this->content);
-                        break;
-                }
-            }
-        }
+        $this->content = preg_replace("/\{comment\:(.*?)\}/is", "", $this->content);
+        $this->content = preg_replace("/\\{LOOP:.*?\\}(.*?)\\{\\/LOOP\\}/is", "", $this->content);
     }
 
 }

@@ -1,4 +1,7 @@
 <?php
+/**
+ * FrameWork Principal
+ */
 abstract class easyFrameWork
 {
     public const HASH_ALGO = [
@@ -42,22 +45,8 @@ abstract class easyFrameWork
         "HAVAL256,5" => "haval256,5"
     ];
     /**
-     * permet d'appelé un template
-     * @param string $name nom du microtemplate
-     * @param string $path chemin d'accès du fichier des microtemplate
-     */
-    public static function getMicroTemplate($name, $path = "include/microtpl.json")
-    {
-        $json = json_decode(file_get_contents($path), true);
-
-        if (gettype($json[$name]) == "array") {
-            return implode($json[$name]);
-        } else
-            return $json[$name];
-    }
-    /**
-     * format une chaine de caractère en camel Case
-     * @param string $input chaine a transformée
+     * permet de transformer une chaine de caractère en CamelCase
+     * @param string $input
      * @return string
      */
     public static function toCamelCase($input)
@@ -66,54 +55,24 @@ abstract class easyFrameWork
             return strtoupper($matches[1]);
         }, $input);
     }
-    public static function testClassMethode($fnc,$result,$args){
-        $arr = [];
-        $arr["Expected"]=$result;
-        $reflection = new ReflectionMethod($fnc);
-        $start = microtime(true);
-        $return = call_user_func_array($fnc, $args);
-        $end = microtime(true);
-        $time = ($end - $start);
-        if ($reflection->hasReturnType()) {
-            $arr["Result"]=$return;
-            if ($return === $result) {
-                $arr["Test"] = "OK";
-            } else
-                $arr["Test"] = "KO";
-
-        }
-        $arr["execTime"] = $time;
-        $arr["file"] = $reflection->getFileName();
-        $arr["name"] = $reflection->getName();
-        return $arr;
-    }
-    public static function testFnc($fnc, $result, $args)
-    {
-        $arr = [];
-        $arr["Expected"]=$result;
-        $reflection = new ReflectionFunction($fnc);
-        $start = microtime(true);
-        $return = call_user_func_array($fnc, $args);
-        $end = microtime(true);
-        $time = ($end - $start);
-        if ($reflection->hasReturnType()) {
-            $arr["Result"]=$return;
-            if ($return === $result) {
-                $arr["Test"] = "OK";
-            } else
-                $arr["Test"] = "KO";
-
-        }
-        $arr["execTime"] = $time;
-        $arr["file"] = $reflection->getFileName();
-        $arr["name"] = $reflection->getName();
-        return $arr;
-    }
+    /**
+     * récupère les paramètres du fichier *ini du projet
+     * @param string $configName
+     * @param string $path
+     * @return array
+     */
     public static function getParams($configName, $path = "include/config.ini")
     {
         $ini = parse_ini_file($path, true);
         return $ini[$configName];
     }
+    /**
+     * Hash une chaîne de caractères et crypte si une clef passe en paramètre 
+     * @param string $str
+     * @param string $key 
+     * @param string $algo
+     * @return string
+     */
     public static function hashString($str, $key = "", $algo = "sha256")
     {
         $return = hash($algo, $str);
@@ -122,35 +81,67 @@ abstract class easyFrameWork
         } else
             return $return;
     }
+    /**
+     * Crypte une chaine de caractères
+     * @param string $plainData
+     * @param string $key
+     * @return string
+     */
     public static function encrypt($plainData, $key)
     {
         $ciphering = "AES-128-CTR";
         $iv_length = openssl_cipher_iv_length($ciphering);
         $encryption_iv = '1234567891011121';
-        $encryption = openssl_encrypt($plainData, $ciphering,
-            $key, 0, $encryption_iv);
+        $encryption = openssl_encrypt(
+            $plainData,
+            $ciphering,
+            $key,
+            0,
+            $encryption_iv
+        );
         return $encryption;
     }
 
-    //For decryption we would use:
+     /**
+     * Decrypte une chaine de caractères
+     * @param string $content
+     * @param string $key
+     * @return string
+     */
     public static function decrypt($content, $key)
     {
         $ciphering = "AES-128-CTR";
         $iv_length = openssl_cipher_iv_length($ciphering);
         $encryption_iv = '1234567891011121';
-        $encryption = openssl_decrypt($content, $ciphering,
-            $key, 0, $encryption_iv);
+        $encryption = openssl_decrypt(
+            $content,
+            $ciphering,
+            $key,
+            0,
+            $encryption_iv
+        );
         return $encryption;
     }
+    /**
+     * Debug une variable et arrête le script courant
+     * @param mixed $var
+     */
     public static function Debug($var)
     {
         var_dump($var);
         exit;
     }
-    public static function INIT($uri = "./_class/_master/", $path = "include/router.json")
+    /**
+     * Initialize les paramètres 
+     * @param string $uri
+     * @param string $path
+     * @param bool $error
+     */
+    public static function INIT($uri = "./_class/_master/", $path = "include/router.json", $error = true)
     {
         ini_set('display_errors', 1);
-        date_default_timezone_set(self::getParams("config")["TimeZone"]);
+        $pathParams = str_replace("router.json", "config.ini", $path);
+        date_default_timezone_set(self::getParams("config", $pathParams)["TimeZone"]);
         if (file_exists("$uri/autoload.class.php"))
             require_once "$uri/autoload.class.php";
         else {
@@ -160,21 +151,20 @@ abstract class easyFrameWork
         Autoloader::callRequires($uri);
         Router::Init($path);
 
-
-        function CreateErrorHandler()
-        {
-            $errorMsg = file_get_contents("include/error_model.html");
-            $error = new ErrorHandler;
-            $error->attach(new LogFile("./include/myerror.txt"));
-            $error->attach(new Message());
-            $error->attach(new Notifier($errorMsg));
-            set_error_handler(array($error, 'error'));
-            //  restore_error_handler();
-            if (easyFrameWork::getParams("config")["FalalError"])
-                register_shutdown_function(ErrorHandler::class . '::errorFatal');
-
+        if ($error) {
+            function CreateErrorHandler()
+            {
+                $errorMsg = file_get_contents("include/error_model.html");
+                $error = new ErrorHandler;
+                $error->attach(new LogFile("./include/myerror.txt"));
+                $error->attach(new Message());
+                $error->attach(new Notifier($errorMsg));
+                set_error_handler(array($error, 'error'));
+                //  restore_error_handler();
+                if (easyFrameWork::getParams("config")["FalalError"])
+                    register_shutdown_function(ErrorHandler::class . '::errorFatal');
+            }
+            CreateErrorHandler();
         }
-        CreateErrorHandler();
     }
 }
-?>

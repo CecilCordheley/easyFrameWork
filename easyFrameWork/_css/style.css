@@ -4,20 +4,40 @@
      box-sizing:border-box;
      font-family: Arial;
 }
+a{
+     color: #FFF;
+     text-decoration: none;
+}
 .container{
      display: grid;
      grid-template-areas: "header"
      "mainContent"
      "footer";
-     width: 380px;
+     width: 980px;
      height: auto;
      margin: 0 auto;
-     background:#666
+     background:#AAA
 }
 .form_control{
      display: flex;
      width: 100%;
      
+}
+menu{
+     display: flex;
+     list-style: none;
+     width: 100%;
+     background: #000;
+}
+menu li a{
+     display: block;
+     padding: 5px
+}
+menu li a:hover{
+     display: block;
+     padding: 5px;
+     background: #FFF;
+     color: #000;
 }
 header{
      grid-area: header;

@@ -21,8 +21,8 @@ class SQLFactoryV2
         $r = $this->getStorageFnc();
         //   var_dump($r[0]);
         $this->routine_fnc = array_reduce($r, function ($carry, $item) {
-            $fncName = $item["ROUTINE_NAME"];
-            $carry[$fncName]["type"] = $item["DATA_TYPE"];
+            $fncName = $item["ROUTINE_NAME"]??$item["routine_name"];
+            $carry[$fncName]["type"] = $item["DATA_TYPE"]??$item["data_type"];
 
             $carry[$fncName]["exec"] = function ($args) use ($fncName) {
                 $argsString = [];

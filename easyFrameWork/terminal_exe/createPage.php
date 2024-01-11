@@ -2,7 +2,7 @@
 /*Utiliser ce fichier via un terminal PHP */
 require_once "../_class/_master/easyFrameWork.class.php";
 /* Initialise le FrameWork et ses dépendances */
-easyFrameWork::INIT("../_class/_master", "../include/router.json");
+easyFrameWork::INIT("../_class/_master", "../include/router.json",false);
 Router::Init("../include/router.json");
 
 echo "-- Création d'une nouvelle page PHP ainsi que les dépendances\n";

@@ -14,5 +14,6 @@
  }): Failed to open stream: No such file or directory - Fichier : C:\wamp64\www\easyFrameWork\_class\SqlEntities.class.php - Ligne :16
 2023/12/18 : 10:02:18 - No [E_USER_NOTICE] - Erreur : Undefined property: EleveTbl::$attributs - Fichier : C:\wamp64\www\easyFrameWork\SQLEntities\elevetbl.class.php - Ligne :12
 2023/12/18 : 10:03:03 - No [E_USER_NOTICE] - Erreur : Undefined property: EleveTbl::$attributs - Fichier : C:\wamp64\www\easyFrameWork\SQLEntities\elevetbl.class.php - Ligne :12
-2023/12/22 : 10:45:19 - No [E_USER_NOTICE] - Erreur : Array to string conversion - Fichier : C:\wamp64\www\easyFrameWork\_ctrl\index.ctrl.php - Ligne :33
-2023/12/22 : 11:08:33 - No [E_USER_NOTICE] - Erreur : Undefined variable $time - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\easyFrameWork.class.php - Ligne :84
+2023/12/18 : 16:10:27 - No [E_USER_NOTICE] - Erreur : Undefined array key "ROUTINE_NAME" - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\SQLFactory.class.php - Ligne :24
+2023/12/18 : 16:12:10 - No [E_USER_NOTICE] - Erreur : Undefined array key "DATA_TYPE" - Fichier : C:\wamp64\www\easyFrameWork\_class\_master\SQLFactory.class.php - Ligne :25
+2023/12/18 : 16:14:44 - No [E_USER_NOTICE] - Erreur : Undefined variable $param - Fichier : C:\wamp64\www\easyFrameWork\_ctrl\index.ctrl.php - Ligne :35

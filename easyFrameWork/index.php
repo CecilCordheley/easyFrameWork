@@ -12,5 +12,5 @@ Router::setMainTemplate($template, "mainContent"); // <-- charge le contenu spe 
 include(Router::getCtrl());//<-- controle "la partie code" de la page 
 Router::LoadStyles($template);//<-- Charge les bibliothèque css
 $template->loadDictionnary($vars);
-$template->clear(["VIEW","LOOP"]);
+
 $template->display();

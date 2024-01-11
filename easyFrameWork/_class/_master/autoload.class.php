@@ -1,6 +1,6 @@
 <?php
 /**
- * Permet de chargement automatique des classes
+ * Permet de charger automatiquement les classes du projets
  */
 class Autoloader
 {
