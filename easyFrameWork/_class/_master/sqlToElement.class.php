@@ -1,36 +1,47 @@
 <?php
+
+/**
+ * Classe abstraite qui définit les SqlToElement
+ */
 abstract class SqlToElement
 {
     /**
      * @var SQLFactoryV2
-*/
+     */
     private $SQLF;
     /**
-     * @param $sqlfactory SQLFactoryV2
+     * Instancie un SqlToElement
+     * @param SQLFactoryV2 $sqlfactory
      */
-   
+
     public function __construct($sqlfactory)
     {
         $this->SQLF = $sqlfactory;
-
     }
-
-    public function getFactory():SQLFactoryV2{return $this->SQLF;}
     /**
-     * @param $param array
+     * Retourne l'instance de SQLFactoryV2
+     */
+    public function getFactory(): SQLFactoryV2
+    {
+        return $this->SQLF;
+    }
+    /**
+     * Retourne l'élément HTML généré à l'aide de la reqête
+     * @param array $param
      */
     public function generate($param): string
     {
         return "";
     }
 }
-class SqlToForm extends SqlToElement{
-public function generate($param): string
+class SqlToForm extends SqlToElement
+{
+    public function generate($param): string
     {
         $url = $param["URI"];
         $method = $param["METHOD"];
         if (key_exists("table", $param)) {
-            
+
             $result = parent::getFactory()->getColumns($param["table"]);
         }
         //var_dump($result);
@@ -74,45 +85,48 @@ public function generate($param): string
         return "<form action=\"$url\" method=\"$method\">$return<button type=\"\">Envoyer</button></form>";
     }
 }
-class SQLtoView extends SqlToElement{
+class SQLtoView extends SqlToElement
+{
     /**
      * @var string
      */
     private $view;
-    public function __construct($sqlfactory,$view=""){
+    public function __construct($sqlfactory, $view = "")
+    {
         parent::__construct($sqlfactory);
-        if($view!="")
-            $this->view=file_get_contents($view);
+        if ($view != "")
+            $this->view = file_get_contents($view);
     }
-    public function generate($param):string{
-        $i=0;
-        $factory=parent::getFactory();
-        $result=$factory->execQuery($param["query"]);
-        if(key_exists("view",$param))
-            $this->view=$param["view"];
-        if($this->view==null){
+    public function generate($param): string
+    {
+        $i = 0;
+        $factory = parent::getFactory();
+        $result = $factory->execQuery($param["query"]);
+        if (key_exists("view", $param))
+            $this->view = $param["view"];
+        if ($this->view == null) {
             throw new Exception("No view parameter");
-        }else
-        $return = array_reduce($result, function ($carry, $item) use($param,&$i) {
-            if(key_exists("callback",$param)){
-                $carry["str"].=call_user_func($param["callback"],$item,$carry["previous"],$this->view);
-            }else{
-                $carry["str"].=$this->view;
-            }
-            foreach($item as $key=>$value){
-                $carry["str"]=str_replace("#$key#",$value,$carry["str"]);
-            }
-            $carry["previous"]=$item;
-           // echo $i.$carry["str"];
-            $i++;
-            
-            return $carry;
-        },[
-            "str"=>"",
-            "previous"=>null
-        ]);
-        if(key_exists("container",$param)){
-            $return["str"]=str_replace("[...]",$return["str"],$param["container"]);
+        } else
+            $return = array_reduce($result, function ($carry, $item) use ($param, &$i) {
+                if (key_exists("callback", $param)) {
+                    $carry["str"] .= call_user_func($param["callback"], $item, $carry["previous"], $this->view);
+                } else {
+                    $carry["str"] .= $this->view;
+                }
+                foreach ($item as $key => $value) {
+                    $carry["str"] = str_replace("#$key#", $value, $carry["str"]);
+                }
+                $carry["previous"] = $item;
+                // echo $i.$carry["str"];
+                $i++;
+
+                return $carry;
+            }, [
+                "str" => "",
+                "previous" => null
+            ]);
+        if (key_exists("container", $param)) {
+            $return["str"] = str_replace("[...]", $return["str"], $param["container"]);
         }
         return $return["str"];
     }

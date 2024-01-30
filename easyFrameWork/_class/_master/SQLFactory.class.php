@@ -6,6 +6,11 @@ class SQLFactoryV2
     private $tables;
     private $routine_fnc;
     private $ini;
+    /**
+     * Instancie un nouvel SqlFactory
+     * @param PDO|null $PDO
+     * @param string $configPath
+     */
     public function __construct($PDO = null, $configPath = "include/config.ini")
     {
         $this->ini = easyFrameWork::getParams("BDD", $configPath);
@@ -35,6 +40,10 @@ class SQLFactoryV2
         }, []);
         //   var_dump($this->tables);
     }
+    /**
+     * Retourne l'identifiant de la table
+     * @param string $table
+     */
     private function getID($table)
     {
         return array_reduce($this->execQuery("SELECT COLUMN_NAME
@@ -46,6 +55,10 @@ class SQLFactoryV2
             return $carry;
         }, []);
     }
+    /**
+     * Retourne les champs de la table
+     * @param string $table
+     */
     public function getColumns($table)
     {
         $i = 0;
@@ -70,6 +83,11 @@ class SQLFactoryV2
             return $carry;
         }, []);
     }
+    /**
+     * Retourne toutes les occurences de la table
+     * @param string $table
+     * @throws Exception la table n'existe pas
+     */
     public function getTable($table)
     {
 
@@ -82,6 +100,11 @@ class SQLFactoryV2
             throw new Exception("$table doesn't exist in the current schema");
         }
     }
+    /**
+     * Ajoute une occurence dans la table
+     * @param array $item
+     * @param string $table
+     */
     public function addItem($item, $table)
     {
 
@@ -98,6 +121,11 @@ class SQLFactoryV2
         return $this->execQuery($query);
 
     }
+    /**
+     * supprimer l'occurence de la table
+     * @param string $id
+     * @param string $table
+     */
     public function deleteItem($id, $table)
     {
         $f = $this->tables[$table]["PRI"][0];
@@ -107,6 +135,11 @@ class SQLFactoryV2
             throw new Exception("$table doesn't exist in the current schema");
         }
     }
+    /**
+     * Met à jour l'item de la table
+     * @param array $item
+     * @param string $table
+     */
     public function updateItem($item, $table)
     {
         $u = [];
@@ -119,6 +152,10 @@ class SQLFactoryV2
         $id = $item[$f];
         $this->execQuery("UPDATE $table SET " . implode(",", $u) . " WHERE $f=$id");
     }
+    /**
+     * Exécute une requête
+     * @param string $query
+     */
     public function execQuery($query)
     {
         $sth = $this->PDO->query($query);
@@ -126,25 +163,42 @@ class SQLFactoryV2
         $sth->closeCursor();
         return $arr;
     }
+    /**
+     * Execute une fonction stockée
+     * @param string $fncName nom de la fonction
+     * @param array $args
+     */
     public function execFnc($fncName, $args)
     {
         //  echo "SELECT `fncName`(".$args[0]["value"].") AS `$fncName`;";
         return $this->execQuery("SELECT `$fncName`(" . $args[0]["value"] . ") AS `$fncName`;");
     }
+    /**
+     * Retourne toute les tables du schema courant
+     */
     public function getTableSchema()
     {
         return $this->execQuery("SELECT TABLE_NAME 
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA='" . $this->ini["bdd"] . "' ");
     }
+    /**
+     * Retourne les tables avec les informations associées
+     */
     public function getTableArray()
     {
         return $this->tables;
     }
+    /**
+     * Retourne les procédures stockées
+     */
     public function getRoutineArray()
     {
         return $this->routine_fnc;
     }
+    /**
+     * Retourne les fonctions stockées
+     */
     public function getStorageFnc()
     {
         return $this->execQuery("SELECT routine_schema as \"Database\", routine_name, data_type FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = \"" . $this->ini["bdd"] . "\" ORDER BY routine_schema ASC, routine_name ASC");

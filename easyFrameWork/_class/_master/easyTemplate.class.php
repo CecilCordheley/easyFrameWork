@@ -28,7 +28,7 @@ class EasyTemplate
 
     /**
      * Instancie un nouveau template
-     * @param string $configName Nom de la configuration (par défault :"config")
+     * @param string $configName Nom de la configuration (par défault :"config"
      */
     public function __construct($configName = "config")
     {
@@ -66,7 +66,7 @@ class EasyTemplate
 
     /**
      * Retourne le tableau des variable présentes sur le template
-     * @return array
+     * 
      */
     public function getVariableArray(): array
     {
@@ -76,20 +76,18 @@ class EasyTemplate
             $i = 0;
             array_walk($matches[1], function ($m) use (&$i, &$array) {
                 $tabName = explode(".", $m);
-                $aName= $tabName[0]??"";
-                $field=$tabName[1]??"";
+
                 if (count($tabName) > 1) {
-                    $array['array'][$i]['key'] = "$aName.$field" ;
-                    $v = $this->dictionnary->__get($aName[0]);
-
-                    $array['array'][$i]['value'] =
-                        (isset($v[$field])) ? htmlspecialchars($v[$field]??'') 
-                        : "";
-
+                    $array['array'][$i]['key'] = $tabName[0] . "." . $tabName[1];
+                    $v = $this->dictionnary->__get($tabName[0]);
+                    if (isset($v[$tabName[1]]))
+                        $array['array'][$i]['value'] = htmlentities($v[$tabName[1]]);
+                    else
+                        $array['array'][$i]['value'] = "";
                 } else {
                     $array['variable'][$i]['key'] = $m;
                     if (isset($this->dictionnary))
-                        $array['variable'][$i]['value'] = htmlspecialchars($this->dictionnary->__get($m)??'');
+                        $array['variable'][$i]['value'] = htmlspecialchars($this->dictionnary->__get($m) ?? '');
                 }
                 $i++;
             });
@@ -114,11 +112,16 @@ class EasyTemplate
      */
     private function replace($key, $value)
     {
+        //    var_dump($value);
         $this->content = str_replace("{var:$key}", $value, $this->content);
     }
 
+    /**
+     * remplace "{var:?}" par un contenu qui n'est pas géré par le dictionnaire de variable
+     */
     public function Variable($key, $value)
     {
+
         $this->content = str_replace("{var:$key}", $value, $this->content);
     }
 
@@ -139,10 +142,8 @@ class EasyTemplate
      */
     public function callTemplate($key, $templateName)
     {
-        $handle = fopen($this->config['templateDirectory'] . "/$templateName", "r");
         $c = file_get_contents($this->config['templateDirectory'] . "/$templateName");
         $this->content = str_replace("{var:$key}", $c, $this->content);
-        fclose($handle);
     }
 
     /**
@@ -155,11 +156,11 @@ class EasyTemplate
         $mime = explode(".", $script);
         $_m = $mime[count($mime) - 1];
         $html = "";
-        $pattern = "http\:\/\/";
+        $pattern = "https\:\/\/";
         switch ($_m) {
             case "js": {
                     if (file_exists($this->config['JSDirectory'] . "/$script"))
-                        $html = "<script type=\"text/javascript\" src=\"" . $this->config['JSDirectory'] . "/$script\"></script>";
+                        $html = "<script type=\"text/javascript\" src=\"{:racine}" . $this->config['JSDirectory'] . "/$script\"></script>";
                     elseif (preg_match("/$pattern/is", $script)) {
                         $html = "<script type=\"text/javascript\" src=\"$script\"></script>";
                     } else
@@ -170,13 +171,13 @@ class EasyTemplate
 
                     if (file_exists($this->config['StyleDirectory'] . "/$script")) {
 
-                        $html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $this->config['StyleDirectory'] . "/$script\"";
+                        $html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"{:racine}" . $this->config['StyleDirectory'] . "/$script\"";
                         if (isset($properties)) {
                             if (isset($properties["media"])) {
                                 $html .= " media=\"" . $properties["media"] . "\"";
                             }
                         }
-                        $html .= "\>";
+                        $html .= ">";
                     } elseif (preg_match("/$pattern/is", $script)) {
                         $html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"$script\"";
                         if (isset($properties)) {
@@ -196,64 +197,152 @@ class EasyTemplate
     }
 
     /**
-     * Affiche la page et effectue les remplacement nécéssaires
+     * effectue les remplacement nécéssaires
+     * @param array $item
      * @throws Exception 
      */
-    private function _replace($item)
+    private function _replace(array $item): void
     {
         $this->replace($item["key"], html_entity_decode($item['value']));
+        unset($item);
     }
     /**
+     * Remplace une occurence "{view:?}" avec une SQLtoView
      * @param $key string
      * @param $sqlView SQLtoView
      * @param $p array
      */
-    public function _view($key,$sqlView,$p)
+    public function _view(string $key, SQLtoView $sqlView, array $p)
     {
-        $pattern="{view:$key}";
-        $replace=$sqlView->generate($p);
-        $this->content=str_replace($pattern,$replace,$this->content); 
+        $pattern = "{view:$key}";
+        $replace = $sqlView->generate($p);
+        $this->content = str_replace($pattern, $replace, $this->content);
         return $this;
     }
+    /**
+     * Remplace une occurence "{view:?}" par un contenu alternatif
+     * @param string $key
+     * @param string $content
+     */
+    public function replaceView(string $key, string $content)
+    {
+        $pattern = "{view:$key}";
+        $this->content = str_replace($pattern, $content, $this->content);
+        return $this;
+    }
+    /**
+     * Effectue le remplacement des variables de SESSION ou des variable GET employé par les <i>array_reduce</i> des methodes privées <b>replaceGetVariable</b> et <b>replaceSessionVariable</b>
+     * @param (array|string) $m
+     * @param string $key
+     * @param string $type
+     */
     private function matchReplace($m, $key, $type)
     {
         switch ($type) {
-            case "SESSION":{
-                $context=$m[0];
-                $name=$m[1];
-                $this->content = str_replace("{:SESSION context=\"$context\" name=\"$name\"}", (isset($_SESSION[$context][$name])) ? $_SESSION[$context][$name] : "", $this->content);
-                break;
-            }
+            case "SESSION": {
+                    $context = $m[0];
+                    $name = $m[1];
+                    $this->content = str_replace("{:SESSION context=\"$context\" name=\"$name\"}", (isset($_SESSION[$context][$name])) ? $_SESSION[$context][$name] : "", $this->content);
+                    break;
+                }
             case "GET":
                 $this->content = str_replace("{:GET name=\"$m\"}", (isset($_GET[$m])) ? $_GET[$m] : "", $this->content);
                 break;
         }
     }
+    /**
+     * Remplace les occurence "{async file=? fnc=? args=?}" par l'URL du dossier ./async/
+     */
+    private function replaceAsync()
+    {
+        $pattern = "\\{async file=\"(.*?)\" fnc=\"(.*?)\" args=\[(.*?)\]\\}";
+        $subst = "$1?fnc=$2&args=$3";
+        $this->content = preg_replace("/$pattern/is", $subst, $this->content);
+    }
+    /**
+     * Affiche le contenu de la page avec toutes les substitutions
+     */
     public function display()
     {
         if ($this->dictionnary) {
             $array = $this->getVariableArray();
-
-            if (isset($array["variable"]))
-                array_walk($array["variable"], EasyTemplate::class . '::_replace');
-            if (isset($array['array']))
-                array_walk($array["array"], EasyTemplate::class . '::_replace');
-            if (isset($array["loop"]))
-                array_walk($array["loop"], EasyTemplate::class . '::_replace');
-                if (isset($array["view"])){
-                    array_walk($array["view"], EasyTemplate::class . '::_view');
+            while (isset($array["variable"])) {
+                if (isset($array["variable"])) {
+                    array_walk($array["variable"], EasyTemplate::class . '::_replace');
+                    unset($array["variable"]);
                 }
+                if (isset($array['array'])) {
+                    array_walk($array["array"], EasyTemplate::class . '::_replace');
+                    unset($array["array"]);
+                }
+                if (isset($array["loop"])) {
+                    array_walk($array["loop"], EasyTemplate::class . '::_replace');
+                    unset($array["loop"]);
+                }
+                if (isset($array["view"])) {
+                    array_walk($array["view"], EasyTemplate::class . '::_view');
+                    unset($array["view"]);
+                }
+
+                $array = $this->getVariableArray();
+                $this->replaceCondition();
+                $this->replaceGetVariable();
+                $this->replaceUNICODE();
+                $this->replaceAsync();
+                if (isset($_SESSION))
+                    $this->replaceSessionVariable();
+            }
+            $this->replaceCondition();
             $this->replaceGetVariable();
             $this->replaceUNICODE();
             if (isset($_SESSION))
                 $this->replaceSessionVariable();
+            // var_dump(isset($array["variable"]));
+
+            //  var_dump($this->config);
+            $this->content = str_replace("{:racine}", $this->config['racineProject'] . "/", $this->content);
+            $this->content = str_replace("{:url}", $_SERVER['PHP_SELF'] . "/", $this->content);
             $this->content = str_replace("{:image}", $this->config["imageDirectory"], $this->content);
             //  $this->content=str_replace("{:now}",date("Y-m-d"),$this->content);
-            $this->content = preg_replace("/\{:SESSION name=\"(\w+)\"}/is", "", $this->content);
+            $this->content = preg_replace("/\{:SESSION context=\"(\w+)\" name=\"(\w+)\"}/is", "", $this->content);
             echo $this->content;
         } else
             throw new Exception("Vous n'avez pas charg&eacute; de dictionnaire de variables");
     }
+    /**
+     * Affiche les occurence "{:IF ?(=|!|>|<)?}[contenu]{:/IF} si la condition est remplie" 
+     */
+    private function replaceCondition()
+    {
+        $pattern = "\{\:IF (.*?)(=|!|>|<)(.*?)\}(.*?)\{\:\/IF\}";
+        if (preg_match_all("/$pattern/is", $this->content, $matches)) {
+            //var_dump($matches);
+            for ($i = 0; $i < count($matches[0]); $i++) {
+                $replace = "";
+                //   var_dump($matches);
+                switch ($matches[2][$i]) {
+                    case "=":
+                        $replace = ($matches[1][$i] == $matches[3][$i]) ? $matches[4][$i] : "";
+                        break;
+                    case ">":
+                        $replace = ($matches[1][$i] > $matches[3][$i]) ? $matches[4][$i] : "";
+                        break;
+                    case "<":
+                        $replace = ($matches[1][$i] < $matches[3][$i]) ? $matches[4][$i] : "";
+                        break;
+                    case "!": {
+
+                            $replace = ($matches[1][$i] !== $matches[3][$i]) ? $matches[4][$i] : "";
+                            break;
+                        }
+                }
+                $this->content = str_replace($matches[0][$i], $replace, $this->content);
+            }
+        }
+    }
+    /**
+     * Remplace les variables de sessions
+     */
     private function replaceSessionVariable()
     {
         if (preg_match_all("/\{:SESSION context=\"(\w+)\" name=\"(\w+)\"}/is", $this->content, $matches)) {
@@ -261,21 +350,40 @@ class EasyTemplate
             array_walk($a, EasyTemplate::class . '::matchReplace', "SESSION");
         }
     }
+    /**
+     * Remplace les caractères unicode
+     * [
+     *          "sharp"=>"#",
+     *       "pipe"=>"|",
+     *          "LeftCurlyBraket"=>"{",
+     *          "RightCurlyBraket"=>"}",
+     *          "LeftSquareBraket"=>"[",
+     *          "RightSquareBraket"=>"]",
+     *         "Greater"=>">",
+     *          "Lower"=>"<"
+     * ]
+     */
     private function replaceUNICODE()
     {
         if (preg_match_all("/\{:UNICODE:(\w+)}/is", $this->content, $matches)) {
+            $a = [
+                "sharp" => "#",
+                "pipe" => "|",
+                "LeftCurlyBraket" => "{",
+                "RightCurlyBraket" => "}",
+                "LeftSquareBraket" => "[",
+                "RightSquareBraket" => "]",
+                "Greater" => ">",
+                "Lower" => "<"
+            ];
             foreach ($matches[1] as $m) {
-                switch ($m) {
-                    case "sharp":
-                        $this->content = str_replace("{:UNICODE:sharp}", "#", $this->content);
-                        break;
-                    case "pipe":
-                        $this->content = str_replace("{:UNICODE:pipe}", "|", $this->content);
-                        break;
-                }
+                $this->content = str_replace("{:UNICODE:$m}", $a[$m], $this->content);
             }
         }
     }
+    /**
+     * Remplace les variables $_GET par leur valeur
+     */
     private function replaceGetVariable()
     {
         if (preg_match_all("/\{:GET name=\"(\w+)\"}/is", $this->content, $matches)) {
@@ -298,6 +406,7 @@ class EasyTemplate
             $content = array_reduce($array, function ($html, $lines) use ($matches, $UTF8Encode) {
                 $html .= $matches[1][0];
                 foreach ($lines as $key => $value) {
+                    //       var_dump($key,$value);
                     if (gettype($value) != "array")
                         if ($UTF8Encode)
                             $html = str_replace("{#$key#}", mb_convert_encoding($value, "UTF-8"), $html);
@@ -309,9 +418,13 @@ class EasyTemplate
             $this->content = str_replace($matches[0][0], $content, $this->content);
         }
     }
-
-
-
+    /**
+     * Supprime l'occurence "{view:?}" équivalent de la méthode <b>clear()</b>
+     */
+    public function clearView($key)
+    {
+        $this->content = str_replace("{view:$key}", "", $this->content);
+    }
     /**
      * Efface les variables inutilisées ainsi que les commentaires 
      */
@@ -319,8 +432,6 @@ class EasyTemplate
     {
         $this->content = preg_replace("/\{comment\:(.*?)\}/is", "", $this->content);
         $this->content = preg_replace("/\\{LOOP:.*?\\}(.*?)\\{\\/LOOP\\}/is", "", $this->content);
+        $this->content = preg_replace("/\{view:.*?\}/is", "", $this->content);
     }
-
 }
-
-?>

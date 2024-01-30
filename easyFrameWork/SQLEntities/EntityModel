@@ -45,6 +45,9 @@
          [%affect%]
       $return[]=$entity;
       }
-     return (count($return)>1)?$return:$return[0];
+      if(count($return))
+      return (count($return) > 1) ? $return : $return[0];
+    else
+      return false;
     }
  }

@@ -12,6 +12,9 @@ class ErrorHandler implements ISubject
     private $current;
     private $errorCat;
     private $triggered;
+    /**
+     * Instancie un nouveau gestionnaire d'erreur
+     */
     public function __construct()
     {
         $this->triggered=false;
@@ -19,6 +22,9 @@ class ErrorHandler implements ISubject
         $this->current = new stdClass();
         $this->errorCat=["E_USER_ERROR","E_USER_WARNING","E_USER_NOTICE"];
     }
+    /**
+     * indique si une erreur est déclenchée
+     */
     public function isTriggered(){
         return  $this->triggered;
     }
@@ -55,6 +61,9 @@ class ErrorHandler implements ISubject
     {
         return $this->current;
     }
+    /**
+     * Retourne le contenu du fichier des erreurs fatales
+     */
     public static function getFatalError(){
         $filePath = "./include/error.txt";
         if (file_exists($filePath)) {
@@ -118,7 +127,7 @@ class ErrorHandler implements ISubject
  * Permet de retirer un obsever
  * @param IObserver $obs observateur a retiré
  */
-    public function detach($obs)
+    public function dettach($obs)
     {
         if (is_int($key = array_search($obs, $this->_observers, true))) {
             unset($this->_observers[$key]);
@@ -196,6 +205,10 @@ class Notifier implements IObserver
 {
 
     private $pattern;
+    /**
+     * Instancie une Notifier
+     * @param string $pattern
+     */
     public function __construct($pattern = "")
     {
         if ($pattern != "")
@@ -212,12 +225,19 @@ class Notifier implements IObserver
             $this->pattern = $msg;
         }
     }
+   /**
+    * Fonction inhérente à l'observer
+    * @param ErrorHandler $object
+    */
     public function update($object)
     {
         $e = $object->getError();
         $this->ShowError($e);
     }
-
+/**
+ * affiche l'erreur suivant le pattern
+ * @param StdClass $error
+ */
     private function ShowError($error)
     {
         $msg = $this->pattern;
@@ -238,17 +258,25 @@ class Message implements IObserver
      * @var array
      */
     private $_messages;
-
+/**
+ * Instancie une nouvelle occurence
+ */
     public function __construct()
     {
         $this->_messages = array();
     }
-
+ /**
+    * Fonction inhérente à l'observer
+    * @param ErrorHandler $object
+    */
     public function update($object)
     {
         $this->_messages[] = $object->getError();
     }
-
+ /**
+    * Affiche l'ensemble des erreurs constatées
+    * 
+    */
     public function showError()
     {
         $msg = "";
@@ -284,5 +312,3 @@ class SysLog implements IObserver
     }
 
 }
-
-?>

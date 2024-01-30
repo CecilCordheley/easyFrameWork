@@ -4,10 +4,33 @@
 if (Query::hasPostValues()) {
     $vars->formTest = Query::get("test_name");
 } else {
+    $form = new FormBuilder("#?action=test","POST");
+    $form->addCompoment([
+    "ID" => "nom",
+    "type" => "text",
+    "name" => "inputName",
+    "value" => "valeur par défaut",
+    "label"=>"Ici le nom"
+    ]);
+    $vars->FormExample1= $form->generate();
     $pattern="\n<div class='compoment'>\n".
     "\t<label for=\"[#ID#]\">[#label#]</label>\n".
     "\t<input  id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#] [#required#]>\n".
     "</div>";
+    $pattern="\n<div class='compoment'>\n".
+    "\t<label for=\"[#ID#]\">[#label#]</label>\n".
+    "\t<input id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#] [#required#]>\n".
+    "</div>";
+    $form2 = new FormBuilder("#?action=test", "POST",$pattern); 
+    $form2->addCompoment([
+        "ID" => "nom",
+        "type" => "text",
+        "name" => "inputName",
+        "value" => "valeur par défaut",
+        "label"=>"Ici le nom"
+        ]);
+        $vars->FormExample2= $form2->generate(); 
+    
     $form = new FormBuilder(Server::GetSelF() . "?action=test", "POST",$pattern);
     $form->addCompoment([
         "ID" => "test",

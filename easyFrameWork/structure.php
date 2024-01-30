@@ -11,5 +11,4 @@ Router::setMainTemplate($template,"mainContent");
 include(Router::getCtrl());
 Router::LoadStyles($template);
 $template->loadDictionnary($vars);
-$template->clear();
 $template->display();

@@ -34,9 +34,9 @@ class FormBuilder
     public function generate($footer=[])
     {
         $return = "<form action=[#action#] method=[#methode#]>[...]</form>";
-        $return = str_replace("[#action#]", $this->action, $return);
-        $return = str_replace("[#methode#]", $this->method, $return);
-        $p = $this->pattern ?? "<label for=\"[#ID#]\">[#label#]</label><input  id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#] [#required#]>";
+        $return = str_replace("[#action#]", "\"".$this->action."\"", $return);
+        $return = str_replace("[#methode#]", "\"".$this->method."\"", $return);
+        $p = ($this->pattern!="") ? $this->pattern:"<label for=\"[#ID#]\">[#label#]</label><input  id=\"[#ID#]\" type=\"[#type#]\" name=\"[#name#]\" value=[#value#] [#required#]>";
         array_walk($this->compoment, function ($item, $key) use (&$return, $p) {
             // var_dump($item);
             $compoment = $p . "\n\t";
@@ -61,7 +61,7 @@ class FormBuilder
                 }
                 $compoment = str_replace("[#data#]", "", $compoment);
             } else {
-                $compoment = str_replace("[#value#]", $item["value"] ?? "\"&nbsp;\"", $compoment);
+                $compoment = str_replace("[#value#]", "\"".$item["value"]."\"" ?? "\"&nbsp;\"", $compoment);
                // easyFrameWork::Debug($compoment);
                 $compoment = str_replace("[#type#]", $item["type"], $compoment);
             }

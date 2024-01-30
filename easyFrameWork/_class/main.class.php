@@ -19,6 +19,9 @@ abstract class Main{
         ],[
             "href"=>"sqlEntities.php",
             "pageName"=>"SQL Entities"
+        ],[
+            "href"=>"structure.php",
+            "pageName"=>"Structure"
         ]
     ];
 

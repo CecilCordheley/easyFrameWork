@@ -45,7 +45,7 @@ abstract class easyFrameWork
         "HAVAL256,5" => "haval256,5"
     ];
     /**
-     * permet de transformer une chaine de caractère en CamelCase
+     * permet de transformer une chaine de caractères en CamelCase
      * @param string $input
      * @return string
      */
