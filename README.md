@@ -7,4 +7,5 @@ Il contient :
   <li>Une classe permettant de gérer les erreurs</li>
   <li>Le moteur de template(easyTemplate)</li>
   <li>Les classes pour gérer les variables GET, POST et SESSION(globaleManager)</li>
+  <li>Un composant permetant de créer des formulaires</li>
 </ul>
