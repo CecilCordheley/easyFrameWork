@@ -1,5 +1,26 @@
 <?php
 /**
+ * Fournit un timer permettant de mesurer un temps d'exécution
+ */
+class ExecTime{
+    private $Mstart;
+    private $Mend;
+
+    public function __construct(){
+        $this->Mstart=0;
+        $this->Mend=0;
+    }
+    public function start(){
+        $this->Mstart=microtime(true);
+    }
+    public function end(){
+        $this->Mend=microtime(true);
+    }
+    public function __toString(){
+        return "Proceed Time : ".number_format($this->Mend - $this->Mstart, 2). " seconds.";
+    }
+}
+/**
  * FrameWork Principal
  */
 abstract class easyFrameWork
@@ -49,7 +70,7 @@ abstract class easyFrameWork
      * @param string $input
      * @return string
      */
-    public static function toCamelCase($input)
+    public static function toCamelCase(string $input):string
     {
         return preg_replace_callback('/(?:^|_)([a-z])/', function ($matches) {
             return strtoupper($matches[1]);
@@ -61,7 +82,7 @@ abstract class easyFrameWork
      * @param string $path
      * @return array
      */
-    public static function getParams($configName, $path = "include/config.ini")
+    public static function getParams(string $configName,string $path = "include/config.ini"):array
     {
         $ini = parse_ini_file($path, true);
         return $ini[$configName];
@@ -73,7 +94,7 @@ abstract class easyFrameWork
      * @param string $algo
      * @return string
      */
-    public static function hashString($str, $key = "", $algo = "sha256")
+    public static function hashString(string $str,string $key = "",string $algo = "sha256"):string
     {
         $return = hash($algo, $str);
         if ($key != "") {
@@ -87,7 +108,7 @@ abstract class easyFrameWork
      * @param string $key
      * @return string
      */
-    public static function encrypt($plainData, $key)
+    public static function encrypt(string $plainData,string $key):string
     {
         $ciphering = "AES-128-CTR";
         $iv_length = openssl_cipher_iv_length($ciphering);
@@ -101,14 +122,48 @@ abstract class easyFrameWork
         );
         return $encryption;
     }
-
+    public static function MakeTest(mixed $test,Exception|string $throw){
+        assert($test,$throw);
+    }
+    /**
+     * Permet de vérifier si la function passer en paramètre retourne le résultat attendu et peut founir les informations de
+     */
+    public static function makeTestFnc(callable $function,mixed $result,Exception|string $throw,bool $debug=true,array $args=null){
+       
+        $executionTime = new ExecTime();
+        $executionTime->start();
+        $return=call_user_func_array($function,$args);
+        $executionTime->end();
+      //  easyFrameWork::Debug($dat);
+        assert($result===$result,$throw);
+            if($debug){
+                $dat = getrusage();
+                echo "<style>*{box-sizing:0; font-family:Arial;}table{width:100%; height:150px;}table tr th{text-align:left;background:#FF0;}</style><table>
+                <tr>
+                    <th>Current function succeed</th>
+                </tr>
+                <tr>
+                    <td>$executionTime</td>
+                </tr>
+                <tr>
+                    <td>Wait for $result</td>
+                </tr>
+                <tr><td>Return $return</td></tr>
+                <tr>
+                    <td>taille maximale du groupe de résidents ".$dat["ru_maxrss"]."KB</td>
+                </tr>
+            </table>";
+            
+            exit;
+        }
+    }
      /**
      * Decrypte une chaine de caractères
      * @param string $content
      * @param string $key
      * @return string
      */
-    public static function decrypt($content, $key)
+    public static function decrypt(string $content,string $key):string
     {
         $ciphering = "AES-128-CTR";
         $iv_length = openssl_cipher_iv_length($ciphering);
@@ -126,7 +181,7 @@ abstract class easyFrameWork
      * Debug une variable et arrête le script courant
      * @param mixed $var
      */
-    public static function Debug($var)
+    public static function Debug(mixed $var)
     {
         var_dump($var);
         exit;
@@ -137,7 +192,7 @@ abstract class easyFrameWork
      * @param string $path
      * @param bool $error
      */
-    public static function INIT($uri = "./_class/_master/", $path = "include/router.json", $error = true)
+    public static function INIT(string $uri = "./_class/_master/",string $path = "include/router.json",bool $error = true)
     {
         ini_set('display_errors', 1);
         $pathParams = str_replace("router.json", "config.ini", $path);
